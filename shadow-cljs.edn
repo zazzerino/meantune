@@ -1,11 +1,12 @@
 ;; shadow-cljs configuration
-{:source-paths
- ["src/dev"
-  "src/main"
-  "src/test"]
+{:source-paths ["src/dev"
+                "src/main"
+                "src/test"]
 
- :dependencies
- []
+ :dependencies [[reagent "1.0.0-alpha2"]
+                [re-frame "1.0.0"]]
 
- :builds
- {}}
+ :dev-http {8080 "public"}
+
+ :builds {:app {:target :browser
+                :modules {:main {:init-fn meantune.app/main}}}}}
