@@ -6,7 +6,9 @@
     "shadow-cljs": "2.10.19"
   },
   "dependencies": {
+    "qwerty-hancock": "^0.6.0",
     "react": "16.13.0",
-    "react-dom": "16.13.0"
+    "react-dom": "16.13.0",
+    "tone": "^13.8.25"
   }
 }
