@@ -9,4 +9,10 @@
  :dev-http {8080 "public"}
 
  :builds {:app {:target :browser
-                :modules {:main {:init-fn meantune.app/main}}}}}
+                :compiler-options {:optimizations :none}
+                :modules {:main {:init-fn meantune.app/main}}
+                :devtools {:http-root "public"
+                           :http-port 8080}}
+          :node-test {:target :node-test
+                      :output-to "out/node-tests.js"
+                      :autorun "true"}}}

@@ -8,19 +8,23 @@
 (defn make-synths [synth-count]
   (mapv make-synth (range synth-count)))
 
-(defn note-on [synth note & {:keys [:a4-freq :temperament]
-                             :or {a4-freq 440 temperament :equal}}]
+(defn play-note [synth note & {:keys [:a4-freq :temperament]
+                               :or {a4-freq 440 temperament :equal}}]
   (let [freq (theory/frequency note a4-freq temperament)]
-    (.triggerAttack synth freq)))
+    (.triggerAttack synth freq)
+    {:synth synth :note note :a4-freq a4-freq :temperament temperament}))
 
 (defn stop [synth]
-  (.triggerRelease synth))
+  (.triggerRelease synth)
+  {:synth synth})
 
 (defn retune [synth note & {:keys [:a4-freq :temperament]
                             :or {a4-freq 440 temperament :equal}}]
   (let [new-freq (theory/frequency note a4-freq temperament)]
-    (.setValueAtTime (.-frequency synth) new-freq)))
+    (.setValueAtTime (.-frequency synth) new-freq)
+    {:synth synth :note note :a4-freq a4-freq :temperament temperament}))
 
 (defn set-oscillator [synth oscillator]
   (let [osc (-> synth .-oscillator)]
-    (.set osc #js {:type (name oscillator)})))
+    (.set osc #js {:type (name oscillator)})
+    {:synth synth :oscillator oscillator}))

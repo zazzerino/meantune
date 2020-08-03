@@ -57,3 +57,10 @@
         d4-freq (* a4-freq (/ 1 (nth intervals 7)))
         half-steps (half-steps-from-d4 note)]
     (interval-frequency d4-freq half-steps temperament)))
+
+(defn find-note [note note-maps]
+  (first (filter (fn [note-map]
+                   (= (:note note-map)
+                      note))
+                 note-maps)))
+
