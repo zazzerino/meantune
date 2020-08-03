@@ -36,6 +36,13 @@
       :synth/stop-note! {:synth synth}})))
 
 (re-frame/reg-event-fx
+ :synth/stop-all
+ (fn [cofx _]
+   (let [db (:db cofx)]
+     {:db (assoc db :synths [])
+      :synth/stop-all! {:synths (:synths db)}})))
+
+(re-frame/reg-event-fx
  :synth/toggle-sustain
  (fn [cofx]
    (let [db (-> (:db cofx)

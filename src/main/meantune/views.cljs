@@ -37,9 +37,14 @@
               :checked @sustain?
               :on-change #(re-frame/dispatch [:synth/toggle-sustain])}]]))
 
+(defn stop-button []
+  [:button {:on-click #(re-frame/dispatch [:synth/stop-all])}
+   "Stop"])
+
 (defn main-panel []
   [:div {:class "main-panel"}
    [welcome-message]
    [keyboard]
    [sustain-checkbox]
+   [stop-button]
    [:div (str @re-frame.db/app-db)]])

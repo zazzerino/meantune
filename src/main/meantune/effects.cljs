@@ -17,3 +17,10 @@
  (fn [{:keys [synths]}]
    (doseq [synth (map :synth synths)]
      (synth/stop synth))))
+
+(re-frame/reg-fx
+ :synth/retune!
+ (fn [{:keys [synths a4-freq temperament]}]
+   (doseq [synth (map :synth synths)]
+     (synth/retune synth (:note synth)
+                   :a4-freq a4-freq :temperament temperament))))
