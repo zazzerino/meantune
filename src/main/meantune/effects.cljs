@@ -11,3 +11,9 @@
  :synth/stop-note!
  (fn [{:keys [synth]}]
    (synth/stop synth)))
+
+(re-frame/reg-fx
+ :synth/stop-all!
+ (fn [{:keys [synths]}]
+   (doseq [synth (map :synth synths)]
+     (synth/stop synth))))

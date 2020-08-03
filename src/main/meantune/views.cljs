@@ -29,7 +29,17 @@
           (set! (.-keyUp qh)
                 #(re-frame/dispatch [:keyboard/keyup %]))))})))
 
+(defn sustain-checkbox []
+  (let [sustain? (re-frame/subscribe [:sustain?])]
+    [:div {:class "sustain-checkbox"}
+     [:label "Sustain: "]
+     [:input {:type "checkbox"
+              :checked @sustain?
+              :on-change #(re-frame/dispatch [:synth/toggle-sustain])}]]))
+
 (defn main-panel []
   [:div {:class "main-panel"}
    [welcome-message]
-   [keyboard]])
+   [keyboard]
+   [sustain-checkbox]
+   [:div (str @re-frame.db/app-db)]])

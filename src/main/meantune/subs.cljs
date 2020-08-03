@@ -5,3 +5,8 @@
  :app-name
  (fn [db]
    (:app-name db)))
+
+(re-frame/reg-sub
+ :sustain?
+ (fn [db]
+   (:sustain? db)))

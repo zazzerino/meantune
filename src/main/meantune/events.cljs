@@ -29,13 +29,20 @@
  (fn [cofx [_ note]]
    (let [db (:db cofx)
          note-map (theory/find-note note (:synths db))
-         synths (filterv (fn [s]
-                           (not= note
-                                 (:note s)))
+         synths (filterv #(not= note (:note %))
                          (:synths db))
          synth (:synth note-map)]
      {:db (assoc db :synths synths)
       :synth/stop-note! {:synth synth}})))
+
+(re-frame/reg-event-fx
+ :synth/toggle-sustain
+ (fn [cofx]
+   (let [db (-> (:db cofx)
+                (update :sustain? not)
+                (update :synths empty))]
+     {:db db
+      :synth/stop-all! {:synths (-> cofx :db :synths)}})))
 
 (re-frame/reg-event-fx
  :keyboard/keydown
@@ -46,5 +53,7 @@
 (re-frame/reg-event-fx
  :keyboard/keyup
  (fn [cofx [_ note]]
-   {:db (:db cofx)
-    :dispatch [:synth/stop-note note]}))
+   (let [sustain? (-> cofx :db :sustain?)]
+     (merge {:db (:db cofx)}
+            (if-not sustain?
+              {:dispatch [:synth/stop-note note]})))))

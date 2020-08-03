@@ -4,4 +4,5 @@
   {:app-name "meantune"
    :a4-freq 440
    :temperament :just
+   :sustain? true
    :synths []})
