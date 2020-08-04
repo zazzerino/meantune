@@ -1,6 +1,7 @@
 (ns meantune.app
   (:require [reagent.dom :as dom]
             [re-frame.core :as re-frame]
+            [meantune.specs]
             [meantune.subs]
             [meantune.cofx]
             [meantune.effects]

@@ -23,7 +23,9 @@
     :equal equal-intervals))
 
 (defn pitch-class [white-key accidental]
-  (let [white-key-offsets {"C" 0 "D" 2 "E" 4 "F" 5 "G" 7 "A" 9 "B" 11}
+  (let [white-key (clojure.string/upper-case white-key)
+        accidental (clojure.string/lower-case accidental)
+        white-key-offsets {"C" 0 "D" 2 "E" 4 "F" 5 "G" 7 "A" 9 "B" 11}
         accidental-offsets {"bb" -2 "b" -1 "" 0 "#" 1 "##" 2}]
     (-> (+ (white-key-offsets white-key)
            (accidental-offsets accidental))
@@ -57,10 +59,3 @@
         d4-freq (* a4-freq (/ 1 (nth intervals 7)))
         half-steps (half-steps-from-d4 note)]
     (interval-frequency d4-freq half-steps temperament)))
-
-(defn find-note [note note-maps]
-  (first (filter (fn [note-map]
-                   (= (:note note-map)
-                      note))
-                 note-maps)))
-

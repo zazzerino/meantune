@@ -10,3 +10,13 @@
  :sustain?
  (fn [db]
    (:sustain? db)))
+
+(re-frame/reg-sub
+ :a4-freq
+ (fn [db]
+   (:a4-freq db)))
+
+(re-frame/reg-sub
+ :temperament
+ (fn [db]
+   (:temperament db)))

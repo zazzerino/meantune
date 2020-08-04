@@ -5,62 +5,73 @@
             [meantune.theory :as theory]
             [meantune.synth :as synth]))
 
+(defn- filter-by-note-name [note-name notes]
+  (first (filter #(= (:note-name %) note-name)
+                 notes)))
+
 (re-frame/reg-event-db
  :initialize-db
  (fn [_ _]
    db/default-db))
 
 (re-frame/reg-event-fx
- :synth/play-note
+ :play-note
  [(re-frame/inject-cofx :synth)]
- (fn [cofx [_ note]]
-   (if (theory/find-note note (:synths (:db cofx)))
-     {:db (:db cofx)}
-     (let [db (:db cofx)
-           note-map {:synth (:synth cofx)
-                     :note note
-                     :a4-freq (:a4-freq db)
-                     :temperament (:temperament db)}]
-       {:db (assoc db :synths (conj (:synths db) note-map))
-        :synth/play-note! note-map}))))
+ (fn [{:keys [db synth]} [_ note-name]]
+   (let [note {:synth synth
+               :note-name note-name
+               :a4-freq (:a4-freq db)
+               :temperament (:temperament db)}]
+     (if (filter-by-note-name note-name (:notes db)) ; note is already playing
+       {:db db}
+       {:db (update-in db [:notes] conj note)
+        :play-note! note}))))
 
 (re-frame/reg-event-fx
- :synth/stop-note
- (fn [cofx [_ note]]
-   (let [db (:db cofx)
-         note-map (theory/find-note note (:synths db))
-         synths (filterv #(not= note (:note %))
-                         (:synths db))
-         synth (:synth note-map)]
-     {:db (assoc db :synths synths)
-      :synth/stop-note! {:synth synth}})))
+ :stop-note
+ (fn [{:keys [db]} [_ note-name]]
+   (let [note (filter-by-note-name note-name (:notes db))
+         new-notes (filterv #(not= note-name (:note-name %))
+                            (:notes db))]
+     {:db (assoc db :notes new-notes)
+      :stop-note! note})))
 
 (re-frame/reg-event-fx
- :synth/stop-all
- (fn [cofx _]
-   (let [db (:db cofx)]
-     {:db (assoc db :synths [])
-      :synth/stop-all! {:synths (:synths db)}})))
+ :stop-all
+ (fn [{:keys [db]} _]
+   {:db (assoc db :notes [])
+    :stop-all! {:notes (:notes db)}}))
 
 (re-frame/reg-event-fx
- :synth/toggle-sustain
- (fn [cofx]
-   (let [db (-> (:db cofx)
-                (update :sustain? not)
-                (update :synths empty))]
-     {:db db
-      :synth/stop-all! {:synths (-> cofx :db :synths)}})))
+ :toggle-sustain
+ (fn [{:keys [db]} _]
+   {:db (-> db (update :sustain? not) (update :notes empty))
+    :stop-all! (select-keys db [:notes])}))
 
 (re-frame/reg-event-fx
- :keyboard/keydown
- (fn [cofx [_ note]]
-   {:db (:db cofx)
-    :dispatch [:synth/play-note note]}))
+ :keydown
+ (fn [{:keys [db]} [_ note-name]]
+   {:db db
+    :dispatch [:play-note note-name]}))
 
 (re-frame/reg-event-fx
- :keyboard/keyup
- (fn [cofx [_ note]]
-   (let [sustain? (-> cofx :db :sustain?)]
-     (merge {:db (:db cofx)}
-            (if-not sustain?
-              {:dispatch [:synth/stop-note note]})))))
+ :keyup
+ (fn [{:keys [db]} [_ note-name]]
+   (merge {:db db}
+          (if-not (:sustain? db)
+            {:dispatch [:stop-note note-name]}))))
+
+(re-frame/reg-event-fx
+ :change-temperament
+ (fn [{:keys [db]} [_ temperament]]
+   {:db (assoc db :temperament temperament)
+    :retune! {:notes (:notes db)
+              :a4-freq (:a4-freq db)
+              :temperament temperament}}))
+
+;; (re-frame/reg-event-fx
+;;  :synth/change-temperament
+;;  (fn [{:keys [db]} [_ temperament]]
+;;    {:db (assoc db :temperament temperament)
+;;     :synth/retune! (merge (select-keys db [:synths :a4-frequency])
+;;                           {:temperament temperament})}))

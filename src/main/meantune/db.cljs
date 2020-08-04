@@ -3,6 +3,6 @@
 (def default-db
   {:app-name "meantune"
    :a4-freq 440
-   :temperament :just
+   :temperament :equal
    :sustain? true
-   :synths []})
+   :notes []})

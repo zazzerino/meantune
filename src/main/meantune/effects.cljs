@@ -1,26 +1,31 @@
 (ns meantune.effects
   (:require [re-frame.core :as re-frame]
+
             [meantune.synth :as synth]))
 
 (re-frame/reg-fx
- :synth/play-note!
- (fn [{:keys [synth note a4-freq temperament]}]
-   (synth/play-note synth note :a4-freq a4-freq :temperament temperament)))
+ :play-note!
+ (fn [{:keys [synth note-name a4-freq temperament] :as args}]
+   (synth/play-note args)))
 
 (re-frame/reg-fx
- :synth/stop-note!
+ :stop-note!
  (fn [{:keys [synth]}]
-   (synth/stop synth)))
+   (synth/stop {:synth synth})))
 
 (re-frame/reg-fx
- :synth/stop-all!
- (fn [{:keys [synths]}]
-   (doseq [synth (map :synth synths)]
-     (synth/stop synth))))
+ :stop-all!
+ (fn [{:keys [notes]}]
+   (doseq [synth (map :synth notes)]
+     (synth/stop {:synth synth}))))
 
 (re-frame/reg-fx
- :synth/retune!
- (fn [{:keys [synths a4-freq temperament]}]
-   (doseq [synth (map :synth synths)]
-     (synth/retune synth (:note synth)
-                   :a4-freq a4-freq :temperament temperament))))
+ :retune!
+ (fn [{:keys [notes a4-freq temperament]}]
+   (doseq [note notes]
+     (let [synth (:synth note)
+           note-name (:note-name note)]
+       (synth/retune {:synth synth
+                      :note-name note-name
+                      :a4-freq a4-freq
+                      :temperament temperament})))))
