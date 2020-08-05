@@ -69,9 +69,10 @@
               :a4-freq (:a4-freq db)
               :temperament temperament}}))
 
-;; (re-frame/reg-event-fx
-;;  :synth/change-temperament
-;;  (fn [{:keys [db]} [_ temperament]]
-;;    {:db (assoc db :temperament temperament)
-;;     :synth/retune! (merge (select-keys db [:synths :a4-frequency])
-;;                           {:temperament temperament})}))
+(re-frame/reg-event-fx
+ :change-a4-freq
+ (fn [{:keys [db]} [_ a4-freq]]
+   {:db (assoc db :a4-freq a4-freq)
+    :retune! {:notes (:notes db)
+              :a4-freq a4-freq
+              :temperament (:temperament db)}}))

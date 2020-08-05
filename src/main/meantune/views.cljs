@@ -38,6 +38,18 @@
               :checked sustain?
               :on-change #(re-frame/dispatch [:toggle-sustain])}]]))
 
+(defn a4-freq-input []
+  (let [a4-freq @(re-frame/subscribe [:a4-freq])]
+    [:div {:class "a4-input"}
+     [:label "A4 Frequency: "]
+     [:input {:type "number"
+              :min 220
+              :max 880
+              :value a4-freq
+              :on-change #(re-frame/dispatch
+                           [:change-a4-freq
+                            (-> % .-target .-value js/parseInt)])}]]))
+
 (defn temperament-select []
   (let [temperament @(re-frame/subscribe [:temperament])]
     [:div {:class "temperament-select"}
@@ -55,11 +67,16 @@
   [:button {:on-click #(re-frame/dispatch [:stop-all])}
    "Stop"])
 
+;; (defn app-state []
+;;   (let [state (str @re-frame.db/app-db)]
+;;     [:div state]))
+
 (defn main-panel []
   [:div {:class "main-panel"}
    [welcome-message]
    [keyboard]
    [sustain-checkbox]
+   [a4-freq-input]
    [temperament-select]
    [stop-button]
-   [:div (str @re-frame.db/app-db)]])
+   #_[app-state]])

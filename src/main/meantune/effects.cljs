@@ -1,6 +1,5 @@
 (ns meantune.effects
   (:require [re-frame.core :as re-frame]
-
             [meantune.synth :as synth]))
 
 (re-frame/reg-fx
